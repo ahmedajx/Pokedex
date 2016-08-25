@@ -9,6 +9,7 @@ type Pokemon struct {
 type Pagination struct {
 	Total   int `json:"total"`
 	PerPage int `json:"per_page"`
+	PageNo  int `json:"page_no"`
 }
 
 type CollectionPokemon struct {
@@ -16,8 +17,8 @@ type CollectionPokemon struct {
 	Pagination        `json:"pagination"`
 }
 
-func AllPokemons() (CollectionPokemon, int) {
-	rows, _ := db.Query("SELECT * FROM pokemon")
+func AllPokemons(offset int, limitNo int) (CollectionPokemon, int) {
+	rows, _ := db.Query("SELECT * FROM pokemon LIMIT ?,?", offset, limitNo)
 	Response := CollectionPokemon{}
 	perPage := 0
 	for rows.Next() {

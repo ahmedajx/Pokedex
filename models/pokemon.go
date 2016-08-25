@@ -27,6 +27,10 @@ func AllPokemons(offset int, limitNo int) (CollectionPokemon, int) {
 		Response.CollectionPokemon = append(Response.CollectionPokemon, pokemon)
 		perPage++
 	}
+	if perPage == 0 {
+		emptySlice := make([]Pokemon, 0)
+		Response.CollectionPokemon = emptySlice
+	}
 	return Response, perPage
 }
 

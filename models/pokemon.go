@@ -1,20 +1,18 @@
 package models
 
+import (
+	"mgws/pokedex/pagination"
+)
+
 type Pokemon struct {
 	PokedexID int    `json:"pokedex_id"`
 	Name      string `json:"name"`
 	Type      string `json:"type"`
 }
 
-type Pagination struct {
-	Total   int `json:"total"`
-	PerPage int `json:"per_page"`
-	PageNo  int `json:"page_no"`
-}
-
 type CollectionPokemon struct {
-	CollectionPokemon []Pokemon `json:"data"`
-	Pagination        `json:"pagination"`
+	CollectionPokemon     []Pokemon `json:"data"`
+	pagination.Pagination `json:"pagination"`
 }
 
 func AllPokemons(offset int, limitNo int) (CollectionPokemon, int) {

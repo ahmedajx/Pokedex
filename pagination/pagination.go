@@ -6,6 +6,12 @@ import (
 	"strconv"
 )
 
+type Pagination struct {
+	Total   int `json:"total"`
+	PerPage int `json:"per_page"`
+	PageNo  int `json:"page_no"`
+}
+
 func Paginate(r *http.Request) (int, int, int) {
 	pageNo := 1
 	limitNo := 5

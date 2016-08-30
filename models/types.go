@@ -4,13 +4,13 @@ import (
 	"mgws/pokedex/pagination"
 )
 
-type Type struct {
+type PType struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type Types struct {
-	Types                 []Type `json:"data"`
+	Types                 []PType `json:"data"`
 	pagination.Pagination `json:"pagination"`
 }
 
@@ -19,13 +19,13 @@ func AllPokeTypes(offset int, limitNo int) (Types, int) {
 	Response := Types{}
 	perPage := 0
 	for rows.Next() {
-		pokeType := Type{}
+		pokeType := PType{}
 		rows.Scan(&pokeType.Id, &pokeType.Name)
 		Response.Types = append(Response.Types, pokeType)
 		perPage++
 	}
 	if perPage == 0 {
-		emptySlice := make([]Type, 0)
+		emptySlice := make([]PType, 0)
 		Response.Types = emptySlice
 	}
 	return Response, perPage

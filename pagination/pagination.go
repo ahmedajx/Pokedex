@@ -1,7 +1,6 @@
 package pagination
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -28,6 +27,5 @@ func Paginate(r *http.Request) (int, int, int) {
 	}
 
 	offset := (pageNo - 1) * limitNo
-	log.Println(offset)
 	return offset, limitNo, pageNo
 }

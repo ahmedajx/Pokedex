@@ -8,6 +8,18 @@ import (
 	"net/http"
 )
 
+func pokeTypesIndex(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Pragma", "no-cache")
+	offset, limitNo, pageNo := pagination.Paginate(r)
+	response, perPage := models.AllPokeTypes(offset, limitNo)
+	response.Pagination.Total = models.TotalPokemonTypes()
+	response.Pagination.PerPage = perPage
+	response.Pagination.PageNo = pageNo
+	b, _ := json.Marshal(response)
+	w.Write(b)
+}
+
 func pokedexIndex(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Pragma", "no-cache")
@@ -23,6 +35,7 @@ func pokedexIndex(w http.ResponseWriter, r *http.Request) {
 func main() {
 	models.Connect()
 	gorillaRoute := mux.NewRouter()
+	gorillaRoute.HandleFunc("/api/poke_types", pokeTypesIndex).Methods("GET")
 	gorillaRoute.HandleFunc("/api/pokedex", pokedexIndex).Methods("GET")
 	http.Handle("/", gorillaRoute)
 	http.ListenAndServe(":3067", nil)

@@ -38,5 +38,5 @@ func main() {
 	gorillaRoute.HandleFunc("/api/poke_types", pokeTypesIndex).Methods("GET")
 	gorillaRoute.HandleFunc("/api/pokedex", pokedexIndex).Methods("GET")
 	http.Handle("/", gorillaRoute)
-	http.ListenAndServe(":3067", nil)
+	http.ListenAndServe(":3000", nil)
 }

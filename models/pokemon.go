@@ -27,7 +27,7 @@ func AllPokemons(offset int, limitNo int) (CollectionPokemon, int) {
 	for rows.Next() {
 		pokemon := Pokemon{}
 		rows.Scan(&pokemon.PokedexID, &pokemon.Name)
-		rozs, _ := db.Query(`SELECT 
+		pokeTyperows, _ := db.Query(`SELECT 
 		    types.id, types.name
 		FROM
 		    pokedex.pokemon
@@ -36,9 +36,9 @@ func AllPokemons(offset int, limitNo int) (CollectionPokemon, int) {
 		        LEFT JOIN
 		    pokedex.types ON pokemon_type.type_id = types.id
 		where pokedexID = ?`, pokemon.PokedexID)
-		for rozs.Next() {
+		for pokeTyperows.Next() {
 			ptypes := PType{}
-			rozs.Scan(&ptypes.Id, &ptypes.Name)
+			pokeTyperows.Scan(&ptypes.Id, &ptypes.Name)
 			pokemon.Relationship.Types = append(pokemon.Relationship.Types, ptypes)
 			if ptypes.Name == "" {
 				emptySlice := make([]PType, 0)

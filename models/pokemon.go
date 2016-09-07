@@ -1,6 +1,7 @@
 package models
 
 import (
+	"log"
 	"mgws/pokedex/pagination"
 )
 
@@ -23,7 +24,6 @@ func AllPokemons(offset int, limitNo int) (CollectionPokemon, int) {
 	rows, _ := db.Query("SELECT * from pokemon  order by pokedexID LIMIT ?,?", offset, limitNo)
 	Response := CollectionPokemon{}
 	perPage := 0
-	//typesNo := 0
 	for rows.Next() {
 		pokemon := Pokemon{}
 		rows.Scan(&pokemon.PokedexID, &pokemon.Name)
@@ -53,6 +53,17 @@ func AllPokemons(offset int, limitNo int) (CollectionPokemon, int) {
 		Response.CollectionPokemon = emptySlice
 	}
 	return Response, perPage
+}
+
+func CreatePokemon(newPokemon Pokemon) {
+	stmt, err := db.Prepare("INSERT INTO pokemon(pokedexID,name) VALUES(?,?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = stmt.Exec(newPokemon.PokedexID, newPokemon.Name)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func TotalPokemons() int {

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"mgws/pokedex/models"
 	"mgws/pokedex/pagination"
 	"net/http"
@@ -18,6 +19,19 @@ func pokeTypesIndex(w http.ResponseWriter, r *http.Request) {
 	response.Pagination.PageNo = pageNo
 	b, _ := json.Marshal(response)
 	w.Write(b)
+}
+
+func pokedexCreate(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	newPokemon := models.Pokemon{}
+	var pokemon models.Pokemon
+	b, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(b, &pokemon)
+	newPokemon.PokedexID = pokemon.PokedexID
+	newPokemon.Name = pokemon.Name
+	models.CreatePokemon(newPokemon)
+	output, _ := json.Marshal(newPokemon)
+	w.Write(output)
 }
 
 func pokedexIndex(w http.ResponseWriter, r *http.Request) {
@@ -37,6 +51,7 @@ func main() {
 	gorillaRoute := mux.NewRouter()
 	gorillaRoute.HandleFunc("/api/poke_types", pokeTypesIndex).Methods("GET")
 	gorillaRoute.HandleFunc("/api/pokedex", pokedexIndex).Methods("GET")
+	gorillaRoute.HandleFunc("/api/pokedex", pokedexCreate).Methods("POST")
 	http.Handle("/", gorillaRoute)
 	http.ListenAndServe(":3000", nil)
 }

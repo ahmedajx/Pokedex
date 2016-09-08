@@ -38,7 +38,8 @@ func pokedexIndex(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Pragma", "no-cache")
 	offset, limitNo, pageNo := pagination.Paginate(r)
-	response, perPage := models.AllPokemons(offset, limitNo)
+	include := r.FormValue("include")
+	response, perPage := models.AllPokemons(offset, limitNo, include)
 	response.Pagination.Total = models.TotalPokemons()
 	response.Pagination.PerPage = perPage
 	response.Pagination.PageNo = pageNo

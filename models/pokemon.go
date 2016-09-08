@@ -6,9 +6,10 @@ import (
 )
 
 type Pokemon struct {
-	PokedexID    int          `json:"pokedex_id"`
-	Name         string       `json:"name"`
-	Relationship Relationship `json:"relationships"`
+	PokedexID int    `json:"pokedex_id"`
+	Name      string `json:"name"`
+	//http://stackoverflow.com/questions/18088294/how-to-not-marshal-an-empty-struct-into-json-with-go
+	Relationship *Relationship `json:"relationship,omitempty"`
 }
 
 type Relationship struct {
@@ -20,30 +21,15 @@ type CollectionPokemon struct {
 	pagination.Pagination `json:"pagination"`
 }
 
-func AllPokemons(offset int, limitNo int) (CollectionPokemon, int) {
+func AllPokemons(offset int, limitNo int, include string) (CollectionPokemon, int) {
 	rows, _ := db.Query("SELECT * from pokemon  order by pokedexID LIMIT ?,?", offset, limitNo)
 	Response := CollectionPokemon{}
 	perPage := 0
 	for rows.Next() {
 		pokemon := Pokemon{}
 		rows.Scan(&pokemon.PokedexID, &pokemon.Name)
-		pokeTyperows, _ := db.Query(`SELECT 
-		    types.id, types.name
-		FROM
-		    pokedex.pokemon
-		        LEFT JOIN
-		    pokemon_type ON pokemon.pokedexID = pokemon_type.pokemonID
-		        LEFT JOIN
-		    pokedex.types ON pokemon_type.type_id = types.id
-		where pokedexID = ?`, pokemon.PokedexID)
-		for pokeTyperows.Next() {
-			ptypes := PType{}
-			pokeTyperows.Scan(&ptypes.Id, &ptypes.Name)
-			pokemon.Relationship.Types = append(pokemon.Relationship.Types, ptypes)
-			if ptypes.Name == "" {
-				emptySlice := make([]PType, 0)
-				pokemon.Relationship.Types = emptySlice
-			}
+		if include == "types" {
+			pokemon.Relationship = includePokeTypes(pokemon)
 		}
 		Response.CollectionPokemon = append(Response.CollectionPokemon, pokemon)
 		perPage++
@@ -64,6 +50,29 @@ func CreatePokemon(newPokemon Pokemon) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func includePokeTypes(pokemon Pokemon) *Relationship {
+	r := &Relationship{}
+	pokeTyperows, _ := db.Query(`SELECT 
+		    types.id, types.name
+		FROM
+		    pokedex.pokemon
+		        LEFT JOIN
+		    pokemon_type ON pokemon.pokedexID = pokemon_type.pokemonID
+		        LEFT JOIN
+		    pokedex.types ON pokemon_type.type_id = types.id
+		where pokedexID = ?`, pokemon.PokedexID)
+	for pokeTyperows.Next() {
+		ptypes := PType{}
+		pokeTyperows.Scan(&ptypes.Id, &ptypes.Name)
+		r.Types = append(r.Types, ptypes)
+		if ptypes.Name == "" {
+			emptySlice := make([]PType, 0)
+			r.Types = emptySlice
+		}
+	}
+	return r
 }
 
 func TotalPokemons() int {

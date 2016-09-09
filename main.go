@@ -2,12 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"mgws/pokedex/models"
 	"mgws/pokedex/pagination"
 	"net/http"
+	"strconv"
 )
 
 func pokeTypesIndex(w http.ResponseWriter, r *http.Request) {
@@ -49,9 +49,15 @@ func pokedexIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func pokedexPokeTypeIndex(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	urlParams := mux.Vars(r)
 	pokemonId := urlParams["pokemonID"]
-	fmt.Println(pokemonId)
+	pokemon := models.Pokemon{}
+	i, _ := strconv.Atoi(pokemonId)
+	pokemon.PokedexID = i
+	z := models.IncludePokeTypes(pokemon)
+	b, _ := json.Marshal(z)
+	w.Write(b)
 }
 
 func main() {

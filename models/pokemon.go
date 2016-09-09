@@ -29,7 +29,7 @@ func AllPokemons(offset int, limitNo int, include string) (CollectionPokemon, in
 		pokemon := Pokemon{}
 		rows.Scan(&pokemon.PokedexID, &pokemon.Name)
 		if include == "types" {
-			pokemon.Relationship = includePokeTypes(pokemon)
+			pokemon.Relationship = IncludePokeTypes(pokemon)
 		}
 		Response.CollectionPokemon = append(Response.CollectionPokemon, pokemon)
 		perPage++
@@ -52,10 +52,12 @@ func CreatePokemon(newPokemon Pokemon) {
 	}
 }
 
-func includePokeTypes(pokemon Pokemon) *Relationship {
+func IncludePokeTypes(pokemon Pokemon) *Relationship {
 	r := &Relationship{}
+	c := 0
+	x := true
 	pokeTyperows, _ := db.Query(`SELECT 
-		    types.id, types.name
+		    distinct types.id, types.name
 		FROM
 		    pokedex.pokemon
 		        LEFT JOIN
@@ -64,13 +66,17 @@ func includePokeTypes(pokemon Pokemon) *Relationship {
 		    pokedex.types ON pokemon_type.type_id = types.id
 		where pokedexID = ?`, pokemon.PokedexID)
 	for pokeTyperows.Next() {
+		c++
 		ptypes := PType{}
 		pokeTyperows.Scan(&ptypes.Id, &ptypes.Name)
 		r.Types = append(r.Types, ptypes)
 		if ptypes.Name == "" {
-			emptySlice := make([]PType, 0)
-			r.Types = emptySlice
+			x = false
 		}
+	}
+	if c == 0 || x == false {
+		emptySlice := make([]PType, 0)
+		r.Types = emptySlice
 	}
 	return r
 }

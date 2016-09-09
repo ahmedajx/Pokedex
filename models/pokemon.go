@@ -55,7 +55,6 @@ func CreatePokemon(newPokemon Pokemon) {
 func IncludePokeTypes(pokemon Pokemon) *Relationship {
 	r := &Relationship{}
 	c := 0
-	x := true
 	pokeTyperows, _ := db.Query(`SELECT 
 		    distinct types.id, types.name
 		FROM
@@ -64,21 +63,30 @@ func IncludePokeTypes(pokemon Pokemon) *Relationship {
 		    pokemon_type ON pokemon.pokedexID = pokemon_type.pokemonID
 		        LEFT JOIN
 		    pokedex.types ON pokemon_type.type_id = types.id
-		where pokedexID = ?`, pokemon.PokedexID)
+		where pokedexID = ? and types.id is not null`, pokemon.PokedexID)
 	for pokeTyperows.Next() {
 		c++
 		ptypes := PType{}
 		pokeTyperows.Scan(&ptypes.Id, &ptypes.Name)
 		r.Types = append(r.Types, ptypes)
-		if ptypes.Name == "" {
-			x = false
-		}
 	}
-	if c == 0 || x == false {
+	if c == 0 {
 		emptySlice := make([]PType, 0)
 		r.Types = emptySlice
 	}
 	return r
+}
+
+func SavePokemonType(id int, typeId int) {
+	//todo implement same functionality as sync instead of just attaching.
+	stmt, err := db.Prepare("INSERT INTO pokemon_type(pokemonID,type_id) VALUES(?,?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = stmt.Exec(id, typeId)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func TotalPokemons() int {

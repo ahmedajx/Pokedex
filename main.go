@@ -48,6 +48,18 @@ func pokedexIndex(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
+func pokedexPokeTypeCreate(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	b, _ := ioutil.ReadAll(r.Body)
+	ids := make([]models.PType, 0)
+	json.Unmarshal(b, &ids)
+	urlParams := mux.Vars(r)
+	pokemonId, _ := strconv.Atoi(urlParams["pokemonID"])
+	for _, v := range ids {
+		models.SavePokemonType(pokemonId, v.Id)
+	}
+}
+
 func pokedexPokeTypeIndex(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	urlParams := mux.Vars(r)
@@ -67,6 +79,7 @@ func main() {
 	gorillaRoute.HandleFunc("/api/pokedex", pokedexIndex).Methods("GET")
 	gorillaRoute.HandleFunc("/api/pokedex", pokedexCreate).Methods("POST")
 	gorillaRoute.HandleFunc("/api/pokedex/{pokemonID:[0-9]+}/poke_types", pokedexPokeTypeIndex).Methods("GET")
+	gorillaRoute.HandleFunc("/api/pokedex/{pokemonID:[0-9]+}/poke_types", pokedexPokeTypeCreate).Methods("POST")
 	http.Handle("/", gorillaRoute)
 	http.ListenAndServe(":3000", nil)
 }

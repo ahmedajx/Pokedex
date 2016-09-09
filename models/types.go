@@ -14,6 +14,10 @@ type Types struct {
 	pagination.Pagination `json:"pagination"`
 }
 
+type PokedexTypes struct {
+	Ids []PType
+}
+
 func AllPokeTypes(offset int, limitNo int) (Types, int) {
 	rows, _ := db.Query("SELECT * FROM types LIMIT ?,?", offset, limitNo)
 	Response := Types{}

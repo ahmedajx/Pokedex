@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"io/ioutil"
+	"mgws/pokedex/auth"
 	"mgws/pokedex/models"
 	"mgws/pokedex/pagination"
 	"net/http"
@@ -80,6 +81,7 @@ func main() {
 	gorillaRoute.HandleFunc("/api/pokedex", pokedexCreate).Methods("POST")
 	gorillaRoute.HandleFunc("/api/pokedex/{pokemonID:[0-9]+}/poke_types", pokedexPokeTypeIndex).Methods("GET")
 	gorillaRoute.HandleFunc("/api/pokedex/{pokemonID:[0-9]+}/poke_types", pokedexPokeTypeCreate).Methods("POST")
+	gorillaRoute.HandleFunc("/api/auth", auth.Auth).Methods("GET")
 	http.Handle("/", gorillaRoute)
 	http.ListenAndServe(":3000", nil)
 }

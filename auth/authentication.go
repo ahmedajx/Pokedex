@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
+	"log"
 	"net/http"
 	"time"
 )
@@ -12,6 +13,16 @@ var mySigningKey = []byte("secret")
 
 type Token struct {
 	Token string `json:"token"`
+}
+
+//http://www.alexedwards.net/blog/making-and-using-middleware
+func Middleware(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Our middleware logic goes here...
+		//check if key Authorized exists in header and value has a valid token.
+		log.Println("Executing middlewareOne")
+		next.ServeHTTP(w, r)
+	})
 }
 
 func Auth(w http.ResponseWriter, r *http.Request) {

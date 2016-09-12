@@ -13,7 +13,6 @@ import (
 
 func pokeTypesIndex(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Pragma", "no-cache")
 	offset, limitNo, pageNo := pagination.Paginate(r)
 	response, perPage := models.AllPokeTypes(offset, limitNo)
 	response.Pagination.Total = models.TotalPokemonTypes()
@@ -75,13 +74,13 @@ func pokedexPokeTypeIndex(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	models.Connect()
-	gorillaRoute := mux.NewRouter()
-	gorillaRoute.HandleFunc("/api/poke_types", pokeTypesIndex).Methods("GET")
-	gorillaRoute.HandleFunc("/api/pokedex", pokedexIndex).Methods("GET")
-	gorillaRoute.HandleFunc("/api/pokedex", auth.Middleware(pokedexCreate)).Methods("POST")
-	gorillaRoute.HandleFunc("/api/pokedex/{pokemonID:[0-9]+}/poke_types", pokedexPokeTypeIndex).Methods("GET")
-	gorillaRoute.HandleFunc("/api/pokedex/{pokemonID:[0-9]+}/poke_types", auth.Middleware(pokedexPokeTypeCreate)).Methods("POST")
-	gorillaRoute.HandleFunc("/api/auth", auth.Auth).Methods("GET")
-	http.Handle("/", gorillaRoute)
-	http.ListenAndServe(":3000", nil)
+	router := mux.NewRouter()
+	subRouter := router.PathPrefix("/api").Subrouter()
+	subRouter.HandleFunc("/poke_types", pokeTypesIndex).Methods("GET")
+	subRouter.HandleFunc("/pokedex", pokedexIndex).Methods("GET")
+	subRouter.HandleFunc("/pokedex", auth.Middleware(pokedexCreate)).Methods("POST")
+	subRouter.HandleFunc("/pokedex/{pokemonID:[0-9]+}/poke_types", pokedexPokeTypeIndex).Methods("GET")
+	subRouter.HandleFunc("/pokedex/{pokemonID:[0-9]+}/poke_types", auth.Middleware(pokedexPokeTypeCreate)).Methods("POST")
+	subRouter.HandleFunc("/auth", auth.Auth).Methods("GET")
+	http.ListenAndServe(":3000", router)
 }

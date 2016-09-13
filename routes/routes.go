@@ -12,9 +12,11 @@ type Route struct {
 	HandlerFunc http.HandlerFunc
 }
 
-type Routes []Route
+type Apiroutes []Route
 
-var routes = Routes{
+type WebRoutes []Route
+
+var apiRoutes = Apiroutes{
 	Route{"GET", "/pokedex", handlers.PokedexIndex},
 	Route{"POST", "/pokedex", handlers.PokedexCreate},
 	Route{"GET", "/poke_types", handlers.PokeTypesIndex},
@@ -22,4 +24,7 @@ var routes = Routes{
 	Route{"POST", "/pokedex/{pokemonID:[0-9]+}/poke_types", auth.Middleware(handlers.PokedexPokeTypeCreate)},
 	Route{"POST", "/pokedex", handlers.PokedexCreate},
 	Route{"GET", "/auth", auth.Auth},
+}
+var webRoutes = WebRoutes{
+	Route{"GET", "/", handlers.Index},
 }

@@ -8,6 +8,7 @@ import (
 
 func main() {
 	models.Connect()
-	router := routes.ApiRouter()
+	router := routes.Router()
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))))
 	http.ListenAndServe(":3000", router)
 }

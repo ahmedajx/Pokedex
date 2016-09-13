@@ -3,7 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"html/template"
 	"io/ioutil"
+	"log"
 	"mgws/pokedex/models"
 	"mgws/pokedex/pagination"
 	"net/http"
@@ -19,6 +21,17 @@ func PokeTypesIndex(w http.ResponseWriter, r *http.Request) {
 	response.Pagination.PageNo = pageNo
 	b, _ := json.Marshal(response)
 	w.Write(b)
+}
+func Index(w http.ResponseWriter, r *http.Request) {
+	tpl, err := template.ParseFiles("index.gohtml")
+	if err != nil {
+		log.Println(err)
+	}
+	test := "Test"
+	err = tpl.Execute(w, test)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
 }
 
 func PokedexCreate(w http.ResponseWriter, r *http.Request) {

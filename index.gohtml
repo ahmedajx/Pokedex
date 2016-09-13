@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="https://npmcdn.com/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/vue.resource/1.0.2/vue-resource.min.js"></script>
+<title>Vue Example</title>
+</head>
+
+<body>
+	<h1>(% title %)</h1>
+    <li v-for="p in pokemon">
+        (% p.name %)
+    </li>
+	<script>
+    Vue.config.delimiters = ['(%', '%)']
+	var e = new Vue({
+	    el: 'body',
+	    data: {
+	        title: 'Hello Vue.js!',
+            pokemon : []
+	    },
+        ready : function(){
+            this.$http.get('/api/pokedex').then((response) => {
+                this.pokemon = response.data
+            }, (response) => {
+                alert('failure')
+            });
+        }
+	});
+</script>
+</body>
+
+</html>

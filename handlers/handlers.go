@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"html/template"
 	"io/ioutil"
-	"log"
+	"mgws/pokedex/errors"
 	"mgws/pokedex/models"
 	"mgws/pokedex/pagination"
 	"net/http"
@@ -23,17 +25,33 @@ func PokeTypesIndex(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 func Index(w http.ResponseWriter, r *http.Request) {
-	tpl, err := template.ParseFiles("index.gohtml")
-	if err != nil {
-		log.Println(err)
-	}
-	test := "Test"
-	err = tpl.Execute(w, test)
+	tpl, _ := template.ParseFiles("index.gohtml")
+	err := tpl.Execute(w, "OH")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 }
-
+func GetPokemon(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	urlParams := mux.Vars(r)
+	id, _ := strconv.Atoi(urlParams["pokemonID"])
+	err, getPokemon := models.GetSinglePokemon(id)
+	switch {
+	case err == sql.ErrNoRows:
+		errorNotFound := errors.Error{"Not Found", 404}
+		w.WriteHeader(http.StatusNotFound)
+		output, _ := json.Marshal(errorNotFound)
+		w.Write(output)
+	case err != nil:
+		internalServerError := errors.Error{"Error", 500}
+		w.WriteHeader(http.StatusInternalServerError)
+		output, _ := json.Marshal(internalServerError)
+		w.Write(output)
+	default:
+		output, _ := json.Marshal(getPokemon)
+		w.Write(output)
+	}
+}
 func PokedexCreate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	newPokemon := models.Pokemon{}

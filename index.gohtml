@@ -20,11 +20,11 @@
             pokemon : []
 	    },
         ready : function(){
-            this.$http.get('/api/pokedex?limit=151').then((response) => {
+            var resource = this.$resource('/api/pokedex{/id}');
+            resource.get({}).then((response) => {
                 this.pokemon = response.data.data
                 //https://github.com/vuejs/vue-resource/blob/master/docs/http.md
                 console.log(response.status)
-                console.log(response.data.data)
             }, (response) => {
                 alert('failure')
             });

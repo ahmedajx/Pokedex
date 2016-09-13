@@ -5,6 +5,11 @@ import (
 	"mgws/pokedex/pagination"
 )
 
+type PokemonE struct {
+	PokedexID int    `json:"pokedex_id"`
+	Name      string `json:"name"`
+}
+
 type Pokemon struct {
 	PokedexID int    `json:"pokedex_id"`
 	Name      string `json:"name"`
@@ -87,6 +92,12 @@ func SavePokemonType(id int, typeId int) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func GetSinglePokemon(id int) (error, Pokemon) {
+	getPokemon := Pokemon{}
+	err := db.QueryRow("select pokedexID,name from pokemon where pokedexID = ?", id).Scan(&getPokemon.PokedexID, &getPokemon.Name)
+	return err, getPokemon
 }
 
 func TotalPokemons() int {

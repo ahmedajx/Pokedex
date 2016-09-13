@@ -24,6 +24,7 @@ var apiRoutes = Apiroutes{
 	Route{"POST", "/pokedex/{pokemonID:[0-9]+}/poke_types", auth.Middleware(handlers.PokedexPokeTypeCreate)},
 	Route{"POST", "/pokedex", handlers.PokedexCreate},
 	Route{"GET", "/auth", auth.Auth},
+	Route{"GET", "/pokedex/{pokemonID:[0-9]+}", handlers.GetPokemon},
 }
 var webRoutes = WebRoutes{
 	Route{"GET", "/", handlers.Index},

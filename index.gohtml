@@ -4,25 +4,27 @@
 <meta charset="UTF-8">
 <script src="https://npmcdn.com/vue/dist/vue.js"></script>
 <script src="https://cdn.jsdelivr.net/vue.resource/1.0.2/vue-resource.min.js"></script>
-<title>Vue Example</title>
+<title>PokeDex - 151</title>
 </head>
 
 <body>
-	<h1>(% title %)</h1>
     <li v-for="p in pokemon">
-        (% p.name %)
+        <span> PokeDex Number : (% p.pokedex_id %)</span>   
+        <span> Name : (% p.name %)</span>
     </li>
 	<script>
     Vue.config.delimiters = ['(%', '%)']
 	var e = new Vue({
 	    el: 'body',
 	    data: {
-	        title: 'Hello Vue.js!',
             pokemon : []
 	    },
         ready : function(){
-            this.$http.get('/api/pokedex').then((response) => {
-                this.pokemon = response.data
+            this.$http.get('/api/pokedex?limit=151').then((response) => {
+                this.pokemon = response.data.data
+                //https://github.com/vuejs/vue-resource/blob/master/docs/http.md
+                console.log(response.status)
+                console.log(response.data.data)
             }, (response) => {
                 alert('failure')
             });

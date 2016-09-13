@@ -5,11 +5,6 @@ import (
 	"mgws/pokedex/pagination"
 )
 
-type PokemonE struct {
-	PokedexID int    `json:"pokedex_id"`
-	Name      string `json:"name"`
-}
-
 type Pokemon struct {
 	PokedexID int    `json:"pokedex_id"`
 	Name      string `json:"name"`

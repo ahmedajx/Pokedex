@@ -1,5 +1,6 @@
 # Document, Don't Create
 
+go get github.com/gorilla/mux
 
 ```
 CREATE TABLE `pokemon` (

@@ -2,9 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<script src="https://npmcdn.com/vue/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.2/vue.min.js"></script>
 <script src="https://cdn.jsdelivr.net/vue.resource/1.0.2/vue-resource.min.js"></script>
-<title>PokeDex - 151</title>
+<title>PokeDex</title>
 </head>
 
 <body>
@@ -20,7 +20,7 @@
             pokemon : []
 	    },
         ready : function(){
-            var resource = this.$resource('/api/pokedex{/id}');
+            var resource = this.$resource('/api/pokedex');
             resource.get({}).then((response) => {
                 this.pokemon = response.data.data
                 //https://github.com/vuejs/vue-resource/blob/master/docs/http.md

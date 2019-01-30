@@ -2,7 +2,7 @@ package models
 
 import (
 	"log"
-	"mgws/pokedex/pagination"
+	"Pokedex/pagination"
 )
 
 type Pokemon struct {
@@ -41,15 +41,18 @@ func AllPokemons(offset int, limitNo int, include string) (CollectionPokemon, in
 	return Response, perPage
 }
 
-func CreatePokemon(newPokemon Pokemon) {
+func CreatePokemon(newPokemon Pokemon) error {
 	stmt, err := db.Prepare("INSERT INTO pokemon(pokedexID,name) VALUES(?,?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
 	_, err = stmt.Exec(newPokemon.PokedexID, newPokemon.Name)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
+	return nil
 }
 
 func IncludePokeTypes(pokemon Pokemon) *Relationship {
@@ -77,16 +80,19 @@ func IncludePokeTypes(pokemon Pokemon) *Relationship {
 	return r
 }
 
-func SavePokemonType(id int, typeId int) {
+func SavePokemonType(id int, typeId int) error {
 	//todo implement same functionality as sync instead of just attaching.
 	stmt, err := db.Prepare("INSERT INTO pokemon_type(pokemonID,type_id) VALUES(?,?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
 	_, err = stmt.Exec(id, typeId)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
+	return nil
 }
 
 func GetSinglePokemon(id int) (error, Pokemon) {

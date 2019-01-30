@@ -30,3 +30,7 @@ CREATE TABLE `types` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8
 ```
 
+
+## Endpoints:
+
+List of endpoints can be found in routes/routers.go

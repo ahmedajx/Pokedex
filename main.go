@@ -1,8 +1,8 @@
 package main
 
 import (
-	"mgws/pokedex/models"
-	"mgws/pokedex/routes"
+	"Pokedex/models"
+	"Pokedex/routes"
 	"net/http"
 )
 

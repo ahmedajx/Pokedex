@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"mgws/pokedex/auth"
-	"mgws/pokedex/handlers"
+	"Pokedex/auth"
+	"Pokedex/handlers"
 	"net/http"
 )
 
@@ -17,14 +17,13 @@ type Apiroutes []Route
 type WebRoutes []Route
 
 var apiRoutes = Apiroutes{
+	Route{"GET", "/auth", auth.Auth},
 	Route{"GET", "/pokedex", handlers.PokedexIndex},
-	Route{"POST", "/pokedex", handlers.PokedexCreate},
 	Route{"GET", "/poke_types", handlers.PokeTypesIndex},
 	Route{"GET", "/pokedex/{pokemonID:[0-9]+}/poke_types", handlers.PokedexPokeTypeIndex},
-	Route{"POST", "/pokedex/{pokemonID:[0-9]+}/poke_types", auth.Middleware(handlers.PokedexPokeTypeCreate)},
-	Route{"POST", "/pokedex", handlers.PokedexCreate},
-	Route{"GET", "/auth", auth.Auth},
 	Route{"GET", "/pokedex/{pokemonID:[0-9]+}", handlers.GetPokemon},
+	Route{"POST", "/pokedex", auth.Middleware(handlers.PokedexCreate)},
+	Route{"POST", "/pokedex/{pokemonID:[0-9]+}/poke_types", auth.Middleware(handlers.PokedexPokeTypeCreate)},
 }
 var webRoutes = WebRoutes{
 	Route{"GET", "/", handlers.Index},

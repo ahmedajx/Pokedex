@@ -1,7 +1,7 @@
 package models
 
 import (
-	"mgws/pokedex/pagination"
+	"Pokedex/pagination"
 )
 
 type PType struct {

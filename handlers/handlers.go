@@ -7,9 +7,9 @@ import (
 	"github.com/gorilla/mux"
 	"html/template"
 	"io/ioutil"
-	"mgws/pokedex/errors"
-	"mgws/pokedex/models"
-	"mgws/pokedex/pagination"
+	"Pokedex/errors"
+	"Pokedex/models"
+	"Pokedex/pagination"
 	"net/http"
 	"strconv"
 )
@@ -38,12 +38,18 @@ func GetPokemon(w http.ResponseWriter, r *http.Request) {
 	err, getPokemon := models.GetSinglePokemon(id)
 	switch {
 	case err == sql.ErrNoRows:
-		errorNotFound := errors.Error{"Not Found", 404}
+		errorNotFound := errors.Error{
+			Message: "Not Found",
+			Code: 404,
+		}
 		w.WriteHeader(http.StatusNotFound)
 		output, _ := json.Marshal(errorNotFound)
 		w.Write(output)
 	case err != nil:
-		internalServerError := errors.Error{"Error", 500}
+		internalServerError := errors.Error{
+			Message: "Error",
+			Code: 500,
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		output, _ := json.Marshal(internalServerError)
 		w.Write(output)
@@ -60,7 +66,17 @@ func PokedexCreate(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(b, &pokemon)
 	newPokemon.PokedexID = pokemon.PokedexID
 	newPokemon.Name = pokemon.Name
-	models.CreatePokemon(newPokemon)
+	err := models.CreatePokemon(newPokemon)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		output, _ := json.Marshal(errors.Error{
+			Message: err.Error(), 
+			Code: 500,
+		})
+		w.Write(output)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 	output, _ := json.Marshal(newPokemon)
 	w.Write(output)
 }
@@ -86,8 +102,18 @@ func PokedexPokeTypeCreate(w http.ResponseWriter, r *http.Request) {
 	urlParams := mux.Vars(r)
 	pokemonId, _ := strconv.Atoi(urlParams["pokemonID"])
 	for _, v := range ids {
-		models.SavePokemonType(pokemonId, v.Id)
+		err := models.SavePokemonType(pokemonId, v.Id)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			output, _ := json.Marshal(errors.Error{
+				Message: err.Error(), 
+				Code: 500,
+			})
+			w.Write(output)
+			return
+		}
 	}
+	w.WriteHeader(http.StatusCreated)
 }
 
 func PokedexPokeTypeIndex(w http.ResponseWriter, r *http.Request) {

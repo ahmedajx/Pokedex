@@ -10,7 +10,7 @@ var db *sql.DB
 
 func Connect() {
 	var err error
-	db, err = sql.Open("mysql", "root@/pokedex")
+	db, err = sql.Open("mysql", "root:root@/pokedex")
 	if err != nil {
 		log.Println(err)
 	}
